@@ -15,6 +15,8 @@ const byte pinLed = LED_BUILTIN;
 static const int RXPin = D5, TXPin = D7;
 static const uint32_t GPSBaud = 9600;
 
+unsigned long msLastPrint = 0;
+
 // The TinyGPS++ object
 TinyGPSPlus gps;
 
@@ -40,8 +42,9 @@ void loop()
   while (ss.available() > 0)
   {
     gps.encode(ss.read());
-    if (gps.location.isUpdated())
+    if (gps.location.isUpdated() && millis() >= msLastPrint + 5000)
     {
+      msLastPrint = millis();
       // digitalWrite(pinLed, false);
       // Latitude in degrees (double)
       Serial.print("Latitude= ");
@@ -84,13 +87,13 @@ void loop()
       // Month (1-12) (u8)
       Serial.print("Month = ");
       Serial.println(gps.date.month());
-      for (uint8_t i = 0; i < gps.date.month(); i++)
-      {
-        digitalWrite(pinLed, false);
-        delay(250);
-        digitalWrite(pinLed, true);
-        delay(250);
-      }
+      // for (uint8_t i = 0; i < gps.date.month(); i++)
+      // {
+      //   digitalWrite(pinLed, false);
+      //   delay(250);
+      //   digitalWrite(pinLed, true);
+      //   delay(250);
+      // }
       // Day (1-31) (u8)
       Serial.print("Day = ");
       Serial.println(gps.date.day());
