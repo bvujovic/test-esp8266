@@ -1,4 +1,4 @@
-//* Programski kôd za eksperiment: koliko naizmenične struje troši montaža 220V->5V i ESP8266 u 
+//* Programski kôd za eksperiment: koliko naizmenične struje troši montaža 220V->5V i ESP8266 u
 //* 3 slučaja-faze: veb server, diskonektovan sa mreže, deep sleep. Ovo su rezultati:
 //*             ~I(mA)  ~P(mW)  W za dan    W za mesec
 //* Server      2.5     550     13.2        403
@@ -10,11 +10,18 @@
 typedef unsigned long ulong;
 
 #include <WiFiServerBasics.h>
+
+#if defined(ESP8266)
 ESP8266WebServer server(80);
+const byte pinLed = LED_BUILTIN;
+#elif defined(ESP32)
+WebServer server(80);
+const byte pinLed = 2;
+#endif
 
 void ledOn(bool on, ulong itv = 0)
 {
-    digitalWrite(LED_BUILTIN, !on);
+    digitalWrite(pinLed, !on);
     if (itv > 0)
         delay(itv);
 }
@@ -29,7 +36,7 @@ void bigBlink()
 // Konektovanje na WiFi, postavljanje IP adrese i startovanje veb servera.
 void WiFiOn()
 {
-    ledOn(LED_BUILTIN, true);
+    ledOn(true);
     WiFi.mode(WIFI_STA);
     if (!ConnectToWiFi())
         for (ulong i = 0; i < 6; i++)
@@ -38,34 +45,36 @@ void WiFiOn()
     server.on("/", []()
               { server.send(200, "text/plain", "ESP Web server is working."); });
     server.begin();
-    ledOn(LED_BUILTIN, false);
+    ledOn(false);
 }
 
 // Diskonektovanje sa WiFi-a.
 void WiFiOff()
 {
     server.stop();
-    WiFi.disconnect();
+    WiFi.disconnect(true);
     WiFi.mode(WIFI_OFF);
+#if defined(ESP8266)
     WiFi.forceSleepBegin();
+#endif
     delay(100);
 }
 
 enum Faza
 {
-    WebServer,
+    WebServerPhase,
     NoWiFi,
     Sleep
 } faza;
 
-const ulong itvTrajanjeFaze = 6000;
+const ulong itvTrajanjeFaze = 60000 * 10;
 ulong msPromenaFaze;
 
 void setup()
 {
-    pinMode(LED_BUILTIN, OUTPUT);
+    pinMode(pinLed, OUTPUT);
     WiFiOn();
-    faza = WebServer;
+    faza = WebServerPhase;
     msPromenaFaze = millis();
 }
 
@@ -73,7 +82,7 @@ void loop()
 {
     delay(10);
 
-    if (faza == WebServer)
+    if (faza == WebServerPhase)
     {
         server.handleClient();
         if (millis() > msPromenaFaze + itvTrajanjeFaze)

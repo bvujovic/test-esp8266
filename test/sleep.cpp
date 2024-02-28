@@ -9,6 +9,7 @@ void setup()
 
     // Wait for serial to initialize.
     //   while(!Serial) { }
+    //   Serial.println("\nHi!");
 
     // Deep sleep mode for 30 seconds, the ESP8266 wakes up by itself when GPIO 16 (D0 in NodeMCU board) is connected to the RESET pin
     //   Serial.println("I'm awake, but I'm going into deep sleep mode for 30 seconds");

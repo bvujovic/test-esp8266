@@ -23,8 +23,11 @@ void setup()
 
     String url = "http://api.callmebot.com/whatsapp.php?";
     url = url + "phone=" + CMB_PHONE;
-    url = url + "&text=" + "Beavis!+The+test.";
+    url = url + "&text=" + "Beavis!+++test:)";
+    // U poruci ne smeju da budu spec. karakteri '\n' i ' '. Za spejs moze da se koristi '+'.
     url = url + "&apikey=" + CMB_API_KEY;
+    Serial.println(url);
+// http://api.callmebot.com/whatsapp.php?source=web&phone=+381665501888&apikey=9718584&text=Beavis!\nThe\r\ntest%20:)%F0%9F%99%82
 
     WiFiClient wiFiClient;
     HTTPClient client;

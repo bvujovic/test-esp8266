@@ -1,9 +1,9 @@
 #include "Arduino.h"
 
-const byte pinLed = LED_BUILTIN;
-const byte pinOn = D6;
-const byte pinVar = D7;
-const byte pinOff = D8;
+const byte pinLed = LED_BUILTIN;  // Za ESP07 LED_BUILTIN bi trebalo da bude 2
+const byte pinOn = 12;  // D6 = 12
+const byte pinVar = 13; // D7 = 13
+const byte pinOff = 15; // D8 = 15
 
 void setup()
 {
@@ -14,16 +14,14 @@ void setup()
   digitalWrite(pinLed, true);
   digitalWrite(pinOn, true);
   digitalWrite(pinOff, false);
-
-  // while (true)
-  //   delay(100);
 }
 
 bool val = false;
 
 void loop()
 {
-  digitalWrite(pinLed, val = !val);
+  digitalWrite(pinLed, val);
   digitalWrite(pinVar, val);
+  val = !val;
   delay(1000);
 }
