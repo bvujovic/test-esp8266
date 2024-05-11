@@ -1,5 +1,6 @@
-// Device beeps every hour, half an hour, 10min depending on positions of 3 switches.
-// Future improvements: display, countdown timer, menu, sleep mode.
+//* Device beeps every hour, half an hour, 10min depending on positions of 3 switches.
+//* Future improvements: display, countdown timer, menu, sleep mode
+//* Full project: https://github.com/bvujovic/MeinClock
 
 #include <Arduino.h>
 #include "ESP8266WiFi.h"

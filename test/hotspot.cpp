@@ -1,9 +1,10 @@
 #include <Arduino.h>
 //#include <WiFi.h>
 #include "ESP8266WiFi.h"
+#include "CredWiFi.h" // define WIFI_SSID and WIFI_PASS
 
-const char *wifi_network_ssid = "Vujovic";
-const char *wifi_network_password = "ritern123";
+const char *wifi_network_ssid = WIFI_SSID;
+const char *wifi_network_password = WIFI_PASS;
 
 const char *soft_ap_ssid = "BojanESP";
 const char *soft_ap_password = "testpassword";
