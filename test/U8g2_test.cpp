@@ -6,7 +6,8 @@
 #ifdef U8X8_HAVE_HW_I2C
 #include <Wire.h>
 #endif
-U8G2_SSD1306_64X48_ER_1_HW_I2C u8g2(U8G2_R0, /* reset=*/U8X8_PIN_NONE); // EastRising 0.66" OLED breakout board, Uno: A4=SDA, A5=SCL, 5V powered
+// U8G2_SSD1306_64X48_ER_1_HW_I2C u8g2(U8G2_R0, /* reset=*/U8X8_PIN_NONE); // EastRising 0.66" OLED breakout board, Uno: A4=SDA, A5=SCL, 5V powered
+U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, 12, 14, /* reset=*/U8X8_PIN_NONE);
 
 // #include "ClickButton.h"
 // const byte pinBtnLeft = D7;
@@ -23,19 +24,35 @@ const byte pinLed = LED_BUILTIN;
 void blink()
 {
     Serial.println("blink");
-    // digitalWrite(pinLed, false);
-    // delay(333);
-    // digitalWrite(pinLed, true);
+    digitalWrite(pinLed, false);
+    delay(500);
+    digitalWrite(pinLed, true);
+    delay(500);
 }
 
 void setup()
 {
     Serial.begin(115200);
+    while (!Serial)
+        ;
+    Serial.println("******* Start ********");
     pinMode(pinLed, OUTPUT);
     digitalWrite(pinLed, true);
-    blink();
+    // blink();
     // pinMode(pinBtnLeft, INPUT_PULLUP);
     u8g2.begin();
+
+    u8g2.firstPage();
+    u8g2.setFont(u8g2_font_12x6LED_tf);
+    do
+    {
+        u8g2.drawStr(0, 12, "Testing...");
+        u8g2.drawStr(0, 32, "Testing 2");
+    } while (u8g2.nextPage());
+    delay(4000);
+
+    blink();
+
     // btnLeft.multiclickTime = 500;
     // btnCenter.multiclickTime = 500;
     // btnRight.multiclickTime = 500;
@@ -79,7 +96,7 @@ void loop()
         u8g2.setFont(u8g2_font_logisoso24_tn);
         do
         {
-            u8g2.drawStr(0, 40, "06");
+            u8g2.drawStr(0, 40, "05");
             u8g2.drawStr(29, 40, ":");
             u8g2.drawStr(35, 40, m_str);
         } while (u8g2.nextPage());
