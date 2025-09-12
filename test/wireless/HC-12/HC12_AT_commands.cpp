@@ -32,13 +32,26 @@ void setup()
 
     Serial.begin(115200);
     Serial.println();
-    ss.begin(9600);
+    Serial.println("******* Start ********");
+    ss.begin(4800);
+    // ss.begin(9600);
     bleja();
-    // cmd("AT+P4");
+
+    // cmd("AT+FU2"); // Set to FU2 mode
+    // cmd("AT+P4"); // Set power to 4: 8dBm
+    cmd("AT+C030"); // Set channel to 30
     cmd("AT+RX");
 }
 
 void loop()
 {
-    delay(10);
+    delay(5000);
+    // cmd("AT+RX");
 }
+
+/*
+OK+B4800
+OK+RC030
+OK+RP:+08dBm
+OK+FU2
+*/

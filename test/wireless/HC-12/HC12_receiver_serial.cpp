@@ -21,14 +21,18 @@
 //* RECEIVER
 #include <SoftwareSerial.h>
 
-SoftwareSerial HC12(10, 11); // HC-12 TX Pin, HC-12 RX Pin
+const byte pinRx = D5; // HC-12 RX Pin
+const byte pinTx = D7; // HC-12 TX Pin
+SoftwareSerial HC12(pinRx, pinTx); 
 
 void setup()
 {
-  Serial.begin(9600); // Serial port to computer
-  HC12.begin(9600);   // Serial port to HC12
-  pinMode(8, OUTPUT);
-  digitalWrite(8, HIGH);
+  Serial.begin(115200); // Serial port to computer
+  Serial.println("\nHC-12 Receiver Test");
+  // HC12.begin(9600);   // Serial port to HC12
+  HC12.begin(4800); // Serial port to HC12
+  // pinMode(8, OUTPUT);
+  // digitalWrite(8, HIGH);
 }
 
 void loop()

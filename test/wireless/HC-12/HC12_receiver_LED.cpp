@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
 const byte pinLed = LED_BUILTIN;
-const byte pinSet = D3;
+// const byte pinSet = D3;
 
 void setup()
 {

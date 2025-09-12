@@ -14,7 +14,7 @@ This tells the sensor, “You are now in 400 ppm air—set this as your referenc
 
 #include "Arduino.h"
 #include <Wire.h>
-#include "SparkFun_SCD30_Arduino_Library.h" // lib_deps = sparkfun/SparkFun SCD30 Arduino Library@^1.0.20
+#include "SparkFun_SCD30_Arduino_Library.h" // sparkfun/SparkFun SCD30 Arduino Library@^1.0.20
 SCD30 airSensor;
 
 enum DisplayMode
@@ -28,9 +28,9 @@ DisplayMode displayMode = CO2;         // Start with CO2 display mode
 int prevCO2 = 0;                       // Previous CO2 value
 float prevTemp = 0.0f, prevHum = 0.0f; // Previous temperature and humidity values
 
-#include <TM1637Display.h> // lib_deps = smougenot/TM1637@0.0.0-alpha+sha.9486982048
+#include <TM1637Display.h>     // smougenot/TM1637@0.0.0-alpha+sha.9486982048
 TM1637Display display(D5, D7); // (CLK, DIO)
-#include "OneButton.h" // mathertel/OneButton@^2.0.0
+#include "OneButton.h"         // mathertel/OneButton@^2.0.0
 const byte pinButton = D6;
 OneButton btn(pinButton, true); // Button to change display mode
 
@@ -49,6 +49,8 @@ void displayValue(uint16_t co2, float temp, float hum)
     else if (displayMode == TempHum)
         displayTempHum(temp, hum);
 }
+
+ulong msStartFrcCD = 0;
 
 void setup()
 {
@@ -95,6 +97,19 @@ void setup()
             delay(1000);                              // Wait for a second to let the user read the display
             displayValue(prevCO2, prevTemp, prevHum); // Show previous CO2, temperature and humidity
         });
+    btn.attachDoubleClick(
+        []()
+        {
+            // delay(60000); // Wait for 60 seconds to let the sensor stabilize
+            msStartFrcCD = millis();                      // Start time for forced calibration
+            display.showNumberDecEx(0, 0b01000000, true); // Show 00:00 on the display to indicate forced recalibration
+            // airSensor.setForcedRecalibrationFactor(425); // Set forced recalibration factor to 425 ppm
+            // airSensor.setAutoSelfCalibration(false); // Optional: turn ASC off if you don't ventilate regularly
+            // Serial.println("Button double clicked, forced recalibration with 400 ppm reference.");
+            // display.showNumberDec(425); // Show 425 on the display to indicate forced recalibration
+            delay(1000); // Wait for a second to let the user read the display
+            airSensor.setMeasurementInterval(60);
+        });
 }
 
 ulong ms = 0; // Variable to store the last time the sensor was checked
@@ -115,6 +130,11 @@ void loop()
             Serial.print(" humidity(%):");
             Serial.print(hum, 1);
             Serial.println();
+            if (msStartFrcCD > 0)
+            {
+                display.showNumberDec(1111);
+                delay(1000); // Show 1111 on the display to indicate forced recalibration in progress
+            }
             displayValue(co2, temp, hum);
             prevCO2 = co2;
             prevTemp = temp;
@@ -122,6 +142,17 @@ void loop()
         }
         ms = millis();
     }
-    btn.tick(); 
+
+    if (msStartFrcCD > 0 && millis() >= msStartFrcCD + 20UL * 60 * 1000) // 20 minutes passed
+    {
+        msStartFrcCD = 0;                            // Reset the start time
+        airSensor.setForcedRecalibrationFactor(425); // Set forced recalibration factor to 425 ppm
+        airSensor.setAutoSelfCalibration(false);     // Optional: turn ASC off if you don't ventilate regularly
+        Serial.println("Forced recalibration with 425 ppm reference completed.");
+        display.showNumberDec(425); // Show 425 on the display to indicate forced recalibration
+        delay(1000);                // Wait for a second to let the user read the display
+    }
+
+    btn.tick();
     delay(10);
 }
