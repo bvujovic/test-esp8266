@@ -4,9 +4,9 @@
     - [x] some channel other than the first, e.g. 30: AT+C030
 - [ ] ATtiny85:
     - [x] Can ATtiny send short strings via HC-12?
-    - [ ] Check current consumption:
+    - [x] Check current consumption:
         - [x] @5V - wait: 2.7mA, send: 30mA
-        - [ ] LiIon battery - wait: ?mA, send: ?mA
-        - [ ] LiIon battery, ATtiny sleep - wait: ?mA, send: ?mA
+        - [x] LiIon battery - wait: 1.7mA, send: 32mA
+        - [x] LiIon battery, ATtiny sleep - wait: 0.1mA, send: 25mA
+    - [x] Check reliability of received messages
     - [ ] Check if ATtiny can send messages to Sensor Node Hub (ESP32)
-    - [ ] Check reliability of received messages

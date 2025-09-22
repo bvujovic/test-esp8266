@@ -39,14 +39,14 @@ void setup()
 
     // cmd("AT+FU2"); // Set to FU2 mode
     // cmd("AT+P4"); // Set power to 4: 8dBm
-    cmd("AT+C030"); // Set channel to 30
+    // cmd("AT+C030"); // Set channel to 30
     cmd("AT+RX");
 }
 
 void loop()
 {
     delay(5000);
-    // cmd("AT+RX");
+    cmd("AT+RX");
 }
 
 /*

@@ -1,29 +1,14 @@
-//* Test za 433Mhz HC-12 SI4463 module. Oba skeca su testirana na Arduinima.
-//* https://www.youtube.com/watch?v=vqRqtgvltOI
-//* https://www.youtube.com/watch?v=_CmZsuGwsfg
-//* https://www.datsi.fi.upm.es/docencia/DMC/HC-12_v2.3A.pdf
-//* https://wolles-elektronikkiste.de/en/hc-12-radio-module
+//* Prints messages received from HC-12 module via SoftwareSerial
+//* Blinks built-in LED when receiving
 
-//* SENDER
-// 10k otpornik izmedju VCC i SET pinova za slanje podataka
-// #include <SoftwareSerial.h>
-// SoftwareSerial HC12(10, 11); // HC-12 TX Pin, HC-12 RX Pin
-//
-// void setup() {
-//  HC12.begin(9600);               // Serial port to HC12
-//}
-//
-// void loop() {
-//  delay(2000);
-//  HC12.write("Test 123");
-//}
-
-//* RECEIVER
 #include <SoftwareSerial.h>
 
 const byte pinRx = D5; // HC-12 RX Pin
 const byte pinTx = D7; // HC-12 TX Pin
-SoftwareSerial HC12(pinRx, pinTx); 
+SoftwareSerial HC12(pinRx, pinTx);
+
+const byte pinLed = LED_BUILTIN;
+void ledOn(bool on) { digitalWrite(pinLed, on ? LOW : HIGH); }
 
 void setup()
 {
@@ -31,18 +16,25 @@ void setup()
   Serial.println("\nHC-12 Receiver Test");
   // HC12.begin(9600);   // Serial port to HC12
   HC12.begin(4800); // Serial port to HC12
-  // pinMode(8, OUTPUT);
-  // digitalWrite(8, HIGH);
+  pinMode(pinLed, OUTPUT);
+  ledOn(false);
 }
+
+String message;
 
 void loop()
 {
-  while (HC12.available())
-  {                            // If HC-12 has data
-    Serial.write(HC12.read()); // Send the data to Serial monitor
-  }
-  while (Serial.available())
-  {                            // If Serial monitor has data
-    HC12.write(Serial.read()); // Send that data to HC-12
+  if (HC12.available())
+  {
+    auto now = millis();
+    ledOn(true);
+    message = HC12.readStringUntil('\n');
+    // Serial.println("Time: " + String(millis() - now) + " ms");
+    Serial.println("Received: " + message);
+    // const char *msg = message.c_str();
+    // Serial.println(msg + 1); // skip first character
+    if (millis() - now < 100)
+      delay(100);
+    ledOn(false);
   }
 }
